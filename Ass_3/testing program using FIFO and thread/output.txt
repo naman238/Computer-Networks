@@ -1,0 +1,7 @@
+code_file.cpp: In function ‘int main()’:
+code_file.cpp:7:14: error: expected ‘;’ before ‘return’
+    7 |     cout<<x+1
+      |              ^
+      |              ;
+    8 |     return 0;
+      |     ~~~~~~    

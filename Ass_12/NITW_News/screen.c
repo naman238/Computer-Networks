@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <poll.h>
+#include <signal.h>
+#include <sys/wait.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/sem.h>
+#include <sys/msg.h>
+#include <sys/select.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+const char* name="fifo1";
+int main(){
+    mkfifo(name,0666);
+    int fd=open(name,O_RDWR);
+    char buf[1024];
+  
+   while(1)
+   {
+        int sz=read(fd,buf,1024);
+        
+        if(sz>=0)
+        {
+                
+            buf[sz]='\0';
+            printf("%s\n",buf);
+            fflush(stdout);
+        
+        }
+   } 
+   
+    return 0;
+}

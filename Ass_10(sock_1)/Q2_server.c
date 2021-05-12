@@ -1,0 +1,56 @@
+#include <unistd.h> 
+#include <stdio.h> 
+#include <sys/socket.h> 
+#include <stdlib.h> 
+#include <netinet/in.h> 
+#include <string.h> 
+#include <arpa/inet.h>
+int main()
+{
+    int sfd;
+    if((sfd=socket(AF_INET,SOCK_STREAM,0))==0)
+    {
+        perror("socket failed\n");
+        return 0;
+    }
+    struct sockaddr_in addr;
+    addr.sin_port=htons(7020);
+    addr.sin_family=AF_INET;
+    inet_pton(AF_INET, "127.0.0.1", &(addr.sin_addr));
+    if(bind(sfd,(struct sockaddr*)&addr,sizeof(addr))<0)
+    {
+        perror("bind failed");
+        return 0;
+    }
+    if(listen(sfd,2)<0)
+    {
+        perror("listen failed");
+        return 0;
+    }
+    int nsfd;
+    socklen_t addrlen=sizeof(addr);
+    while(1)
+    {
+        if((nsfd=accept(sfd,(struct sockaddr*)&addr,&addrlen))<0)
+        {
+            perror("accept failed");
+            return (0);
+        }
+        int c=fork();
+        if(c==0)
+        {
+            close(sfd);
+            char buff[1024];
+            int reader=recv(nsfd,&buff,sizeof(buff),0);
+            printf("%s\n",buff);
+            char* msg="hello from server";
+            int bytesend=send(nsfd,msg,strlen(msg),0);
+            return 0;
+        }
+        else
+        {
+            close(nsfd);
+        }
+    }
+    return 0;
+}
